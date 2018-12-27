@@ -1,0 +1,24 @@
+{
+  "name": "neda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "sudo node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fosteev/node-express-docker-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fosteev/node-express-docker-api/issues"
+  },
+  "homepage": "https://github.com/fosteev/node-express-docker-api#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "cookie-parser": "^1.4.3"
+  }
+}

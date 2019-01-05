@@ -25,4 +25,11 @@ router.get('/', (req, res) => {
         })
 });
 
+router.post('/', (req, res) => {
+    setTimeout(() => {
+        res.status(404);
+        res.send('dasdad');
+    }, 4000);
+})
+
 module.exports = router;

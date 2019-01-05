@@ -1,41 +1,53 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const os = require('os');
 const Git = require("nodegit");
+const Settings = require('../BaseClass');
 
-const path = os.homedir() + '/projects';
+router.get('/', async (req, res) => {
+    const files = await Settings.getProjectFolders();
+    const key = await Settings.getGitPublicKey();
 
-function getProjectFolders(callback) {
-    return new Promise((resolve, reject) => {
-        fs.readdir(path, (err, files) => {
-            resolve(files);
-            if (err) {
-                reject(err);
-            }
-        })
+    res.json({
+        repository: files,
+        gitPublicKey: key
     })
+});
 
-}
 
-router.get('/', (req, res) => {
-    getProjectFolders().then(files => res.json(files));
-})
+
+router.get('/projects', async (req, res) => {
+    res.json({
+        path: Settings.getProjectPath(),
+        folders: await Settings.getProjectFolders()
+    })
+});
+
+router.post('/projects', (req, res) => {
+    let {path} = req.query;
+
+    if (typeof path !== 'string') {
+        res.status(400).send('Must be string');
+    }
+
+    if (path === 'default') {
+       path = Settings.getDefaultPath();
+    }
+
+    Settings.setProjectsPath(path);
+    res.send();
+});
 
 function getGitRepository(name) {
-    return new Promise((resolve, reject) => {
-        Git.Repository.open(path + '/' + name)
-            .then(rep => resolve(rep))
-            .catch(err => reject(err));
-    })
+    const path = Settings.getProjectPath();
+    return Git.Repository.open(path + '/' + name);
 }
 
 function getRepository(req, res) {
     return new Promise((resolve, reject) => {
         const {name} = req.params;
-        getProjectFolders().then(files => {
+        Settings.getProjectFolders().then(files => {
             if (!files.includes(name)) {
-                res.status(404).send('Not found project');
+                res.status(404).send(`Not found project: ${name}`);
                 throw new Error('getProjectFolders');
             }
             getGitRepository(name).then(repository => resolve(repository));
@@ -43,8 +55,9 @@ function getRepository(req, res) {
     });
 }
 
-router.get('/:name', (req, res) => {
+router.get('/projects/:name', (req, res) => {
     getRepository(req, res).then(async repository => {
+        const {name} = req.params;
         const statuses = await repository.getStatus();
         const head = await repository.head();
         const currentBranch = await repository.getCurrentBranch();
@@ -53,19 +66,18 @@ router.get('/:name', (req, res) => {
         const remotes = await repository.getRemotes();
         const all = await repository.getReferenceNames();
         const remote = await repository.getRemote('origin');
-       // const remoteList = await remote.referenceList();
-
-        if (remote.connected() == 0) {
-
-        }
+        const gitStatusText = await Settings.gitStatus(name);
+        const branches = await Settings.gitBranches(name);
 
         res.json({
             head: head.shorthand(),
             changes: statuses.map(diffFile => diffFile.path()),
+            gitBranches: branches,
             branch: {
                 name: currentBranch.name(),
                 owner: currentBranch.owner().state()
             },
+            statusText: gitStatusText.split("\n"),
             remotes: remotes.map(remote => remote),
             remote: remote.connected(),
             references: all,

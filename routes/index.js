@@ -7,9 +7,12 @@ router.get('/', (req, res) => {
         EOL: os.EOL,
         platform: os.platform(),
         release: os.release(),
+        arch: os.arch(),
+        cpu: os.cpus(),
         upTime: os.uptime(),
-        memory: (os.totalmem() / 10024 / 1024).toFixed(2),
-        homedir: os.homedir()
+        hostname: os.hostname(),
+        homedir: os.homedir(),
+        network: os.networkInterfaces(),
 })
 });
 

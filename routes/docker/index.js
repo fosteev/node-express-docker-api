@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 'use strict';
-const {Docker} = require('node-docker-api');
+const {Docker: Index} = require('node-docker-api');
 
-const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+const docker = new Index({ socketPath: '/var/run/docker.sock' });
 
 router.get('/containers', (req, res) => {
     // List

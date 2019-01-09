@@ -19,6 +19,9 @@
   "homepage": "https://github.com/fosteev/node-express-docker-api#readme",
   "dependencies": {
     "express": "^4.16.4",
-    "cookie-parser": "^1.4.3"
+    "cookie-parser": "^1.4.3",
+    "node-cmd": "^3.0.0",
+    "nodegit": "^0.23.0",
+    "node-docker-api": "^1.1.22"
   }
 }

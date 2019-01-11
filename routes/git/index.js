@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Git = require("nodegit");
-const Settings = require('./BaseClass');
+const Settings = require('./kernel');
 
 router.get('/', async (req, res) => {
     const files = await Settings.getProjectFolders();

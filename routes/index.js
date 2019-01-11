@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
         hostname: os.hostname(),
         homedir: os.homedir(),
         network: os.networkInterfaces(),
-})
+    })
 });
 
 module.exports = router;

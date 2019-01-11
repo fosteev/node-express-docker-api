@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Git = require("nodegit");
-const Settings = require('../BaseClass');
+const Settings = require('./BaseClass');
 
 router.get('/', async (req, res) => {
     const files = await Settings.getProjectFolders();
@@ -30,7 +30,7 @@ router.post('/projects', (req, res) => {
     }
 
     if (path === 'default') {
-       path = Settings.getDefaultPath();
+        path = Settings.getDefaultPath();
     }
 
     Settings.setProjectsPath(path);

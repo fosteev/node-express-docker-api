@@ -1,0 +1,8 @@
+{
+  "headers": {
+    "Access-Control-Allow-Origin": "http://localhost:7000",
+    "Access-Control-Allow-Credentials": true,
+    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+  },
+  "port": 3000
+}

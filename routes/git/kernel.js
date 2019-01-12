@@ -1,6 +1,7 @@
 const os = require('os');
 const fs = require('fs');
 const cmd = require('node-cmd');
+const Configuration = require('../../configuration');
 
 class Settings {
     constructor() {
@@ -9,7 +10,8 @@ class Settings {
     }
 
     getDefaultPath() {
-        return os.homedir() + '/projects';
+        const configuration = new Configuration();
+        return configuration.getPath();
     }
 
     getProjectPath() {

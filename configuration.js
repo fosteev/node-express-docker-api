@@ -4,6 +4,7 @@ class Configuration {
         const jsonContent = JSON.parse(fs.readFileSync("configuration.json"));
         this.headers = jsonContent.headers;
         this.port = jsonContent.port;
+        this.path  = jsonContent.path;
     }
 
     getHedaers() {
@@ -12,6 +13,10 @@ class Configuration {
 
     getPort() {
         return this.port;
+    }
+
+    getPath() {
+        return this.path;
     }
 }
 

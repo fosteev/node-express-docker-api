@@ -1,6 +1,7 @@
 const express = require('express');
 const os = require('os');
 const router = express.Router();
+const Configuration = require('../configuration');
 
 router.get('/', (req, res) => {
     res.json({
@@ -14,6 +15,15 @@ router.get('/', (req, res) => {
         homedir: os.homedir(),
         network: os.networkInterfaces(),
     })
+});
+
+router.get('/config', (req, res) => {
+    const configuration = new Configuration();
+    res.json({
+        headers: configuration.getHedaers(),
+        port: configuration.getPort(),
+        path: configuration.getPath()
+    });
 });
 
 module.exports = router;

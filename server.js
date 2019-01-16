@@ -4,6 +4,9 @@ class Server {
             route: '/',
             file: require('./routes/index')
         }, {
+            route: '/config',
+            file: require('./routes/index')
+        }, {
             route: '/docker',
             file: require('./routes/docker')
         }, {

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 'use strict';
-const {Docker: Index} = require('node-docker-api');
-const docker = new Index({ socketPath: '/var/run/docker.sock' });
+
 const Images = require('./images');
 const Containers = require('./containers');
 
@@ -12,7 +11,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/images', (req, res) => {
-    const images  = new Images(docker);
+    const images  = new Images();
     images.getImages().then(imgs => {
         res.json(imgs);
     })

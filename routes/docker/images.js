@@ -1,5 +1,7 @@
 class Images {
-    constructor(docker) {
+    constructor() {
+        const {Docker: Index} = require('node-docker-api');
+        const docker = new Index({ socketPath: '/var/run/docker.sock' });
         this.docker = docker;
     }
 

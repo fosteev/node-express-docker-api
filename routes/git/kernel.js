@@ -83,6 +83,28 @@ class Settings {
             )
         })
     }
+
+    getRootPath(name) {
+        return `${this.getProjectPath()}/${name}`;
+    }
+
+    getHistory(name) {
+        if (!name) {
+            throw new Error('Argument name undefined');
+        }
+        const path = this.getRootPath(name);
+
+        return new Promise((resolve, reject) => {
+            cmd.get(`cd ${path} && git log --graph --decorate --oneline`, (err, data, stderr) => {
+                    resolve(data.split("\n").filter(item => item));
+                    if (err) {
+                        reject(err);
+                    }
+                }
+            )
+        })
+    }
+
 }
 
 module.exports = new Settings();

@@ -27,7 +27,18 @@ class Container {
                     if (err) {
                         reject(err);
                     }
-                    resolve(this.dataParsing(data))
+                    resolve(this.dataParsing(data).map(item => {
+                        return {
+                            id: item[0],
+                            image: item[1],
+                            command: item[2],
+                            createAt: item[3],
+                            size: item[4],
+                            status: item[5],
+                            port: item[6],
+                            name: item[7]
+                        }
+                    }))
                 }
             )
         })

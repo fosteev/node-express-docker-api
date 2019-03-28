@@ -1,32 +1,43 @@
-const express = require('express');
-const router = express.Router();
-'use strict';
-
 const Images = require('./images');
 const Containers = require('./containers');
 
+const Handler = require('../../handler');
 
-router.get('/', (req, res) => {
-    res.send('Images');
-});
+const hanlder = new Handler([{
+    method: 'get',
+    path: '/',
+    params: [],
+    handler(headers) {
+        headers.responseText('images');
+    }
+}, {
+    method: 'get',
+    path: '/images',
+    params: [],
+    handler(headers) {
+        const images = new Images();
+        images.getImages().then(images => {
+            headers.responseJson(images);
+        })
+    }
+}, {
+    method: 'get',
+    path: '/containers',
+    params: [],
+    handler(headers) {
+        const containers = new Containers();
+        containers.getContainers()
+            .then(containers => headers.responseJson(containers))
+    }
+}, {
+    method: 'post',
+    path: '/containers',
+    params: [],
+    handler(headers) {
+        const {image, name, inPort, outPort} = headers.getFormParams();
+        headers.responseJson({image, name, inPort, outPort});
+    }
+}]);
 
-router.get('/images', (req, res) => {
-    const images = new Images();
-    images.getImages().then(images => {
-        res.json(images);
-    })
-});
 
-router.get('/containers', (req, res) => {
-    const containers = new Containers();
-    containers.getContainers()
-        .then(containers => res.json(containers))
-});
-
-router.post('/containers', (req, res) => {
-
-});
-
-
-
-module.exports = router;
+module.exports = hanlder.initRouters();

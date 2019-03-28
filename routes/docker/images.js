@@ -25,6 +25,15 @@ class Images {
                         data.split('\n')
                             .filter(v => v)
                             .map(image => image.split('='))
+                            .map(item => {
+                                return {
+                                    repository: item[0],
+                                    tag: item[1],
+                                    imageId: item[2],
+                                    createAt: item[3],
+                                    size: item[4]
+                                }
+                            })
                     )
                 }
             );

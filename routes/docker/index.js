@@ -3,6 +3,15 @@ const Containers = require('./containers');
 
 const Handler = require('../../handler');
 
+const getErrorStatusCode = code => {
+    const notFoundCode = 1;
+    const objectDublicateCode = 125;
+    const codes = {};
+    codes[notFoundCode] = 404;
+    codes[objectDublicateCode] = 400;
+    return codes[code] ? codes[code] : 500
+}
+
 const hanlder = new Handler([{
     method: 'get',
     path: '/',
@@ -35,7 +44,43 @@ const hanlder = new Handler([{
     params: [],
     handler(headers) {
         const {image, name, inPort, outPort} = headers.getFormParams();
-        headers.responseJson({image, name, inPort, outPort});
+        const containers = new Containers();
+
+        containers.setContainer(String(image), String(name), Number(inPort), Number(outPort))
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
+    }
+}, {
+    method: 'put',
+    path: '/containers/:id',
+    params: [],
+    handler(headers) {
+        const {id} = headers.getParams();
+        const containers = new Containers();
+        containers.stopContainer(id)
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
+    }
+}, {
+    method: 'delete',
+    path: '/containers/:id',
+    params: [],
+    handler(headers) {
+        const {id} = headers.getParams();
+        const containers = new Containers();
+
+        containers.removeContainer(id)
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
     }
 }]);
 

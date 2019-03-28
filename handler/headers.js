@@ -16,6 +16,10 @@ class Headers {
         return this.request.query;
     }
 
+    getParams() {
+        return this.request.params
+    }
+
     responseText(text) {
         this.response.send(text);
     }

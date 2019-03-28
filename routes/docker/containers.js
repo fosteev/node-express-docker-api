@@ -44,10 +44,39 @@ class Container {
         })
     }
 
-    setContainer(image, container_port, exposed_port, name) {
+
+    setContainer(image, name, container_port, exposed_port) {
         return new Promise((resolve, reject) => {
-            this.cmd.get('docker run -d -p 30096:80 --name pilot_admin_frontend pilot_admin_frontend', function () {
-                
+            this.cmd.get(`docker run -d -p ${container_port}:${exposed_port} --name ${name} ${image}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
+                }
+                resolve(resp);
+            })
+        })
+    }
+
+    stopContainer(containerID) {
+        return new Promise((resolve, reject) => {
+            this.cmd.get(`docker stop ${containerID}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
+                }
+                resolve(resp);
+            })
+        })
+    }
+
+    removeContainer(containerID) {
+        return new Promise((resolve, reject) => {
+            this.cmd.get(`docker rm ${containerID}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
+                }
+                resolve(resp);
             })
         })
     }

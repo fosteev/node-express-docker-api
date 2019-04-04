@@ -68,27 +68,31 @@ router.get('/projects/:name', (req, res) => {
         const remote = await repository.getRemote('origin');
         const gitStatusText = await Settings.gitStatus(name);
         const branches = await Settings.gitBranches(name);
-
-        res.json({
-            head: head.shorthand(),
-            changes: statuses.map(diffFile => diffFile.path()),
-            gitBranches: branches,
-            branch: {
-                name: currentBranch.name(),
-                owner: currentBranch.owner().state()
-            },
-            statusText: gitStatusText.split("\n"),
-            remotes: remotes.map(remote => remote),
-            remote: remote.connected(),
-            references: all,
-            branches: refs.map(ref => ref.isBranch()),
-            lastCommit: {
-                author: lastCommit.author().toString(),
-                message: lastCommit.message(),
-                time: lastCommit.time(),
-                date: lastCommit.date()
-            }
-        });
+        const history = await Settings.getHistory(name);
+        setTimeout(() => {
+            res.json({
+                head: head.shorthand(),
+                changes: statuses.map(diffFile => diffFile.path()),
+                gitBranches: branches,
+                branch: {
+                    name: currentBranch.name(),
+                    owner: currentBranch.owner().state()
+                },
+                statusText: gitStatusText.split("\n").filter(item => item !== ""),
+                remotes: remotes.map(remote => remote),
+                remote: remote.connected(),
+                references: all,
+                branches: refs.map(ref => ref.isBranch()),
+                lastCommit: {
+                    author: lastCommit.author().toString(),
+                    message: lastCommit.message(),
+                    time: lastCommit.time(),
+                    date: lastCommit.date()
+                },
+                history: history.slice(0, 30)
+            })
+        }, 5000)
+;
     })
 });
 

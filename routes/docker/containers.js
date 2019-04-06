@@ -1,56 +1,83 @@
 class Container {
-    constructor(docker) {
-        this.docker = docker;
+    constructor() {
+        this.cmd = require('node-cmd');
     }
+
+    dataParsing(data) {
+        return data.split('\n').filter(v => v).map(v => v.split('='))
+    }
+
+    /*
+       return array
+       [0]ID
+       [1]IMAGE -- string
+       [2]COMMAND
+       [3]CREATE AT
+       [4]SIZE -- mb
+       [5]STATUS
+       [6]PORTS
+       [7]NAME
+   */
 
     getContainers() {
         return new Promise((resolve, reject) => {
-            let resContainers = [];
-            this.docker.container.list().then(containers => {
-                for (const key in containers) {
-                    resContainers.push(containers[key].data);
+            const format = `"{{.ID}}={{.Image}}={{.Command}}={{.CreatedAt}}={{.Size}}={{.Status}}={{.Ports}}={{.Names}}"`;
+
+            this.cmd.get(`sudo docker ps --format ${format}`, (err, data, stderr) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(this.dataParsing(data).map(item => {
+                        return {
+                            id: item[0],
+                            image: item[1],
+                            command: item[2],
+                            createAt: item[3],
+                            size: item[4],
+                            status: item[5],
+                            port: item[6],
+                            name: item[7]
+                        }
+                    }))
                 }
-                resolve(resContainers);
+            )
+        })
+    }
+
+
+    setContainer(image, name, container_port, exposed_port) {
+        return new Promise((resolve, reject) => {
+            this.cmd.get(`docker run -d -p ${container_port}:${exposed_port} --name ${name} ${image}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
+                }
+                resolve(resp);
             })
         })
     }
 
-    setContainer(image, container_port, exposed_port, name) {
+    stopContainer(containerID) {
         return new Promise((resolve, reject) => {
-            const exposedPorts = {};
-
-            if (!(container_port && exposed_port && image, name)) {
-                reject('No have params', 403);
-            }
-
-            const hostContainerPort = `${container_port}/tcp`;
-
-            exposedPorts[hostContainerPort] = [{
-                "HostPort": exposed_port.toString(),
-                "HostIp": "0"
-            }]
-
-            const params = {
-                Image: image,
-                name: name,
-                ExposedPorts: {},
-                HostPort: {
-                    PortBindings: exposedPorts
+            this.cmd.get(`docker stop ${containerID}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
                 }
-            };
+                resolve(resp);
+            })
+        })
+    }
 
-            params.ExposedPorts[hostContainerPort] = {};
-
-            this.docker.container.create(params)
-                .then(container => container.start())
-                .then(container => resolve(container.data))
-                .catch(error => {
-                    const {json, statusCode} = error;
-                    if (!statusCode) {
-                        reject('Error add', 500);
-                    }
-                    resolve(json);
-                });
+    removeContainer(containerID) {
+        return new Promise((resolve, reject) => {
+            this.cmd.get(`docker rm ${containerID}`,  (err, resp, errText) => {
+                if (err) {
+                    err['dockerResponse'] = errText;
+                    reject(err);
+                }
+                resolve(resp);
+            })
         })
     }
 }

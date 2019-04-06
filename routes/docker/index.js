@@ -1,40 +1,88 @@
-const express = require('express');
-const router = express.Router();
-'use strict';
-
 const Images = require('./images');
 const Containers = require('./containers');
 
+const Handler = require('../../handler');
 
-router.get('/', (req, res) => {
-    res.send('images');
-});
+const getErrorStatusCode = code => {
+    const notFoundCode = 1;
+    const objectDublicateCode = 125;
+    const codes = {};
+    codes[notFoundCode] = 404;
+    codes[objectDublicateCode] = 400;
+    return codes[code] ? codes[code] : 500
+}
 
-router.get('/images', (req, res) => {
-    const images  = new Images();
-    images.getImages().then(imgs => {
-        res.json(imgs);
-    })
-});
-
-router.get('/containers', (req, res) => {
-    const containers = new Containers(docker);
-    containers.getContainers().then(cntrs => res.json(cntrs));
-});
-
-router.post('/containers', (req, res) => {
-    const {id, image, container_port, exposed_port, name} = req.query;
-
-    if (!(container_port && exposed_port && image, name)) {
-        res.status(403).send('Not have params');
+const hanlder = new Handler([{
+    method: 'get',
+    path: '/',
+    params: [],
+    handler(headers) {
+        headers.responseText('images');
     }
+}, {
+    method: 'get',
+    path: '/images',
+    params: [],
+    handler(headers) {
+        const images = new Images();
+        images.getImages().then(images => {
+            headers.responseJson(images);
+        })
+    }
+}, {
+    method: 'get',
+    path: '/containers',
+    params: [],
+    handler(headers) {
+        const containers = new Containers();
+        containers.getContainers()
+            .then(containers => headers.responseJson(containers))
+    }
+}, {
+    method: 'post',
+    path: '/containers',
+    params: [],
+    handler(headers) {
+        const {image, name, inPort, outPort} = headers.getFormParams();
+        const containers = new Containers();
 
-    const containers = new Containers(docker);
-    containers.setContainer(image, container_port, exposed_port, name)
-        .then(json => res.json(json))
-        .catch((msg, code) => res.status(code).send(msg));
-});
+        containers.setContainer(String(image), String(name), Number(inPort), Number(outPort))
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
+    }
+}, {
+    method: 'put',
+    path: '/containers/:id',
+    params: [],
+    handler(headers) {
+        const {id} = headers.getParams();
+        const containers = new Containers();
+        containers.stopContainer(id)
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
+    }
+}, {
+    method: 'delete',
+    path: '/containers/:id',
+    params: [],
+    handler(headers) {
+        const {id} = headers.getParams();
+        const containers = new Containers();
+
+        containers.removeContainer(id)
+            .then(resp => headers.responseJson(resp))
+            .catch(err => {
+                headers.responseStatus(getErrorStatusCode(err.code));
+                headers.responseJson(err);
+            })
+    }
+}]);
 
 
-
-module.exports = router;
+module.exports = hanlder.initRouters();

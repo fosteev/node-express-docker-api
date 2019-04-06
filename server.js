@@ -12,6 +12,9 @@ class Server {
         }, {
             route: '/git',
             file: require('./routes/git')
+        }, {
+            route: '/repository',
+            file: require('./routes/repository')
         }];
 
         const express = require('express');
@@ -42,12 +45,11 @@ class Server {
 
     cookieParser() {
         const cookieParser = require('cookie-parser');
+        this.app.use(cookieParser());
         const bodyParser = require('body-parser');
-        this.app.use(bodyParser.urlencoded({
-            type: 'application/json',
+        this.app.use(bodyParser.json({
             extended: true
         }))
-        this.app.use(bodyParser.json()); // for parsing application/json
     }
 
     start() {

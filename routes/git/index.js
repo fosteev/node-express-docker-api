@@ -68,7 +68,8 @@ router.get('/projects/:name', (req, res) => {
         const remote = await repository.getRemote('origin');
         const gitStatusText = await Settings.gitStatus(name);
         const branches = await Settings.gitBranches(name);
-
+        const history = await Settings.getHistory(name);
+        
         res.json({
             head: head.shorthand(),
             changes: statuses.map(diffFile => diffFile.path()),
@@ -77,7 +78,7 @@ router.get('/projects/:name', (req, res) => {
                 name: currentBranch.name(),
                 owner: currentBranch.owner().state()
             },
-            statusText: gitStatusText.split("\n"),
+            statusText: gitStatusText.split("\n").filter(item => item !== ""),
             remotes: remotes.map(remote => remote),
             remote: remote.connected(),
             references: all,
@@ -87,7 +88,8 @@ router.get('/projects/:name', (req, res) => {
                 message: lastCommit.message(),
                 time: lastCommit.time(),
                 date: lastCommit.date()
-            }
+            },
+            history: history.slice(0, 30)
         });
     })
 });

@@ -12,6 +12,9 @@ class Server {
         }, {
             route: '/git',
             file: require('./routes/git')
+        }, {
+            route: '/repository',
+            file: require('./routes/repository')
         }];
 
         const express = require('express');

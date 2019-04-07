@@ -27,11 +27,12 @@ class Repository {
         return new Promise((resolve, reject) => {
 
             const path = `${this.configuration.getPath()}/${pathFile
-                .replace('-', '/')
-                .replace('-', '/')}`;
+                .replaceAll('-', '/')
+                .replaceAll('=', '-')}`;
 
             this.cmd.get(`cat ${path}`, (err, data, stderr) => {
                     if (err) {
+                        console.log(err);
                         reject(err);
                     }
                     resolve(data)

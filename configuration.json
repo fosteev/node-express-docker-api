@@ -3,7 +3,7 @@
     "Access-Control-Allow-Origin": "http://localhost:7000",
     "Access-Control-Allow-Credentials": true,
     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-    "Access-Control-Allow-Methods": "POST, PUT, GET, OPTIONS"
+    "Access-Control-Allow-Methods": "POST, PUT, GET, DELETE"
   },
   "port": 3000,
   "path": "/home/fost/projects"

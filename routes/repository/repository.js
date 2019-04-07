@@ -32,7 +32,6 @@ class Repository {
 
             this.cmd.get(`cat ${path}`, (err, data, stderr) => {
                     if (err) {
-                        console.log(err);
                         reject(err);
                     }
                     resolve(data)

@@ -30,6 +30,23 @@ const hanlder = new Handler([{
         })
     }
 }, {
+    method: 'post',
+    path: '/images',
+    params: ['path', 'name', 'tag'],
+    handler(headers) {
+        const {path, name, tag} = headers.getFormParams();
+        const images = new Images();
+
+        images.buildImage(
+            path.replaceAll('-', '/')
+                .replaceAll('=', '-'),
+            name,
+            tag
+        ).then(data => {
+            headers.responseJson(data);
+        })
+    }
+}, {
     method: 'get',
     path: '/containers',
     params: [],

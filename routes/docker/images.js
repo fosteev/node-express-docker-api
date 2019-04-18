@@ -39,6 +39,20 @@ class Images {
             );
         })
     }
+
+    buildImage(path, name, tag) {
+        return new Promise((resolve, reject) => {
+            this.cmd.get(`cd ${path} && docker build -t ${name}:${tag} --rm=true .`, (err, data, stderr) => {
+                if (err) {
+                    err['text'] = stderr;
+                    reject(err);
+                }
+                console.log(data);
+                resolve(data)
+            })
+        })
+    }
+
 }
 
 

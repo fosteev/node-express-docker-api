@@ -23,7 +23,7 @@ class Container {
         return new Promise((resolve, reject) => {
             const format = `"{{.ID}}={{.Image}}={{.Command}}={{.CreatedAt}}={{.Size}}={{.Status}}={{.Ports}}={{.Names}}"`;
 
-            this.cmd.get(`sudo docker ps --format ${format}`, (err, data, stderr) => {
+            this.cmd.get(`sudo docker ps -a --format ${format}`, (err, data, stderr) => {
                     if (err) {
                         reject(err);
                     }
